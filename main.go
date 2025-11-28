@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"syscall"
@@ -20,12 +19,6 @@ func main() {
 		syscall.SIGTERM,
 	)
 	defer cancel()
-
-	resp, err := getTemperature("Hangzhou")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Println(resp)
 
 	weatherAgent, err := NewWeatherSentimentAgent(ctx)
 	if err != nil {

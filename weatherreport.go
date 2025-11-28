@@ -2,6 +2,7 @@ package main
 
 import (
 	"adk-weatherreport/main/llm"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -31,9 +32,18 @@ type getWeatherReportResult struct {
 // Contains city name and main temperature details
 type WeatherResponse struct {
 	CityName string `json:"name"`
-	Main     struct {
-		Kelvin float64 `json:"temp"`
+	Weather  []struct {
+		Main        string `json:"main"`
+		Description string `json:"description"`
+	} `json:"weather"`
+	Main struct {
+		Temp float64 `json:"temp"`
 	} `json:"main"`
+}
+
+type ErrorResponse struct {
+	Code    string `json:"cod"`
+	Message string `json:"message"`
 }
 
 func getWeatherReport(ctx tool.Context, args getWeatherReportArgs) (getWeatherReportResult, error) {
@@ -42,7 +52,7 @@ func getWeatherReport(ctx tool.Context, args getWeatherReportArgs) (getWeatherRe
 		return getWeatherReportResult{Status: "error", Report: err.Error()}, nil
 	}
 
-	report := fmt.Sprintf("The weather in %s is %s with a temperature of %f degrees Celsius.", resp.CityName, resp.Main.Kelvin)
+	report := fmt.Sprintf("The weather in %s is %s with a temperature of %f degrees Celsius.", resp.CityName, resp.Weather[0].Description, resp.Main.Temp)
 	return getWeatherReportResult{Status: "success", Report: report}, nil
 }
 
@@ -121,6 +131,15 @@ func getTemperature(city string) (*WeatherResponse, error) {
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %v", err)
+	}
+
+	if bytes.Index(body, []byte("{\"cod\"")) == 0 {
+		var errorResponse ErrorResponse
+		if err := json.Unmarshal(body, &errorResponse); err != nil {
+			return nil, fmt.Errorf("failed to parse JSON: %v", err)
+		}
+
+		return nil, fmt.Errorf("failed to get weather report: %s", errorResponse.Message)
 	}
 
 	var weatherData WeatherResponse
