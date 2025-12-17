@@ -26,6 +26,12 @@
 - 提供流畅的对话体验
 - 智能处理天气查询请求和用户反馈
 
+## 演示视频
+
+点击下方缩略图即可在 YouTube 上观看演示讲解：
+
+[![YouTube 演示讲解视频](https://img.youtube.com/vi/Nw8njfjmxZM/hqdefault.jpg)](https://www.youtube.com/watch?v=Nw8njfjmxZM)
+
 ## 环境要求
 
 - Go 1.25.0 或更高版本

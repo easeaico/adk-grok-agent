@@ -22,7 +22,7 @@ func main() {
 	defer cancel()
 
 	// 创建天气报告智能体
-	weatherReportAgent, err := agents.NewWeatherReportAgentWithGemini(ctx)
+	weatherReportAgent, err := agents.NewWeatherReportAgent(ctx)
 	if err != nil {
 		log.Fatalf("Failed to create agent: %v", err)
 	}
